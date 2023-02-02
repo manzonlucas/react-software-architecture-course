@@ -1,0 +1,8 @@
+{
+  "presets": [
+    // standard preset for converting newer js syntax into older one
+    "@babel/preset-env",
+    // transpiles JSX into JS, so nodejs can understand it syntax
+    "@babel/preset-react"
+  ]
+}
