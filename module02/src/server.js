@@ -11,6 +11,7 @@ import { StaticRouter } from 'react-router-dom/server';
 import App from '../src/App';
 import path from 'path';
 import fs from 'fs';
+import { ServerStyleSheet } from 'styled-components';
 
 const app = express();
 const port = 8080;
@@ -22,13 +23,18 @@ app.use(express.static('./build', { index: false }));
 
 // catch ALL the get requests on any path
 app.get('/*', (req, res) => {
+  const sheet = new ServerStyleSheet();
+
   // convert JSX into HTML string:
   const reactApp = renderToString(
-    // location let StaticRouter know the requested url:
-    <StaticRouter location={req.url}>
-      {/* inside App we remove the BrowserRouter component */}
-      <App />
-    </StaticRouter>
+    // sheet now registers all the styles from the rendered app
+    sheet.collectStyles(
+      // location let StaticRouter know the requested url:
+      <StaticRouter location={req.url}>
+        {/* inside App we remove the BrowserRouter component */}
+        <App />
+      </StaticRouter>
+    )
   );
 
   const templateFile = path.resolve('./build/index.html');
@@ -39,7 +45,9 @@ app.get('/*', (req, res) => {
 
     // send the templateFile with the original div, but we replace it with our already rendered react app
     return res.send(
-      data.replace('<div id="root"></div>', `<div id="root">${reactApp}</div>`)
+      data
+        .replace('<div id="root"></div>', `<div id="root">${reactApp}</div>`)
+        .replace('{{ styles }}', sheet.getStyleTags())
     )
   })
 });
