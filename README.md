@@ -7,4 +7,9 @@ One project for every module of the course that involves coding, everyone of the
 </br>
 ### Topics:
 - <ins>Module 2:</ins> SSR (server-side rendering)
-- <ins>Module 3:</ins> State management architecture (useState, context, Recoil, Redux, MobX)
+- <ins>Module 3:</ins> State management architecture 
+  - useState
+  - context
+  - Recoil
+  - Redux
+  - MobX
