@@ -3,10 +3,17 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+// add here instead of App
+import { BrowserRouter } from 'react-router-dom';
 
-ReactDOM.render(
+// change render to hydrate
+// this takes the pre-rendered html that we get from the server and 'adds reacts' to it. So it can re-renders dinamically as every react app
+ReactDOM.hydrate(
   <React.StrictMode>
-    <App />
+    {/* wrap App inside */}
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')
 );

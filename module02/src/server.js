@@ -6,6 +6,11 @@ import React from "react";
 // this will do the actual app rendering:
 import { renderToString } from "react-dom/server";
 import { Home } from '../src/pages/Home';
+// SSR equivalent of BrowserRouter:
+import { StaticRouter } from 'react-router-dom/server';
+import App from '../src/App';
+import path from 'path';
+import fs from 'fs';
 
 const app = express();
 const port = 8080;
@@ -19,18 +24,26 @@ app.use(express.static('./build', { index: false }));
 app.get('/*', (req, res) => {
   // convert JSX into HTML string:
   const reactApp = renderToString(
-    <Home />
+    // location let StaticRouter know the requested url:
+    <StaticRouter location={req.url}>
+      {/* inside App we remove the BrowserRouter component */}
+      <App />
+    </StaticRouter>
   );
 
-  return res.send(`
-  <html>
-    <body>
-      <div id='root'>${reactApp}</div>
-    </body>
-  </html>
-  `)
+  const templateFile = path.resolve('./build/index.html');
+  fs.readFile(templateFile, 'utf-8', (err, data) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+
+    // send the templateFile with the original div, but we replace it with our already rendered react app
+    return res.send(
+      data.replace('<div id="root"></div>', `<div id="root">${reactApp}</div>`)
+    )
+  })
 });
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
-})
+}) 
